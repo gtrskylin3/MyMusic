@@ -7,12 +7,15 @@ class TrackBase(BaseModel):
     title: str = Field(..., min_length=1, max_length=255, description="Title of the track")
     description: Optional[str] = Field(None, max_length=1000, description="Description of the track")
     filepath: str = Field(..., description="File path of the track")
-    artist_id: int = Field(..., gt=0, description="ID of the artist")
 
+class TrackCreateData(BaseModel):
+    title: str
+    description: Optional[str]
+    genres: Optional[List[str]]
 
 class TrackCreate(TrackBase):
     """Schema for creating a new track"""
-    genre_names: Optional[List[str]] = Field(None, description="List of genre names to associate with the track")
+    genres: Optional[List[str]]
 
 
 class TrackUpdate(BaseModel):
@@ -20,8 +23,7 @@ class TrackUpdate(BaseModel):
     title: Optional[str] = Field(None, min_length=1, max_length=255, description="Title of the track")
     description: Optional[str] = Field(None, max_length=1000, description="Description of the track")
     filepath: Optional[str] = Field(None, description="File path of the track")
-    artist_id: Optional[int] = Field(None, gt=0, description="ID of the artist")
-    genre_names: Optional[List[str]] = Field(None, description="List of genre names to associate with the track")
+    genres: Optional[List[str]] = Field(None, description="List of genre names to associate with the track")
 
 
 class TrackScheme(BaseModel):

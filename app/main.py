@@ -4,7 +4,7 @@ from pathlib import Path
 from contextlib import asynccontextmanager
 import uvicorn
 
-from app.routes import auth_router
+from app.routes import auth_router, tracks_router
 from app.database.db import init_db
 
 
@@ -15,6 +15,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 app.include_router(auth_router, tags=['auth'])
+app.include_router(tracks_router, tags=['tracks'])
 
 
 MEDIA_PATH = Path("app/media/tracks")

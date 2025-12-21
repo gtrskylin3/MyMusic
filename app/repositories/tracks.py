@@ -53,4 +53,4 @@ class TrackRepository:
         return updated_track
 
 
-artist_repository = TrackRepository()
+tracks_repository = TrackRepository()

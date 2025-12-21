@@ -3,6 +3,9 @@ from pathlib import Path
 
 APP_DIR = Path(__file__).resolve().parent
 CERT_DIR = APP_DIR / 'cert'
+MEDIA_DIR = APP_DIR / 'media'
+
+
 
 class Settings(BaseSettings):
     DATABASE_URL: str = "sqlite+aiosqlite:///./music.db"
@@ -16,6 +19,22 @@ class Settings(BaseSettings):
         **COOKIE_SETTINGS,
         "max_age": 30 * 24 * 3600,  # 30 дней для refresh token
     }
+
+class TrackSettings(BaseSettings):
+    
+    TRACK_DIR: Path = MEDIA_DIR / 'tracks'
+    MAX_SIZE: int = 10 * 8 * 1024 * 1024
+    ALLOWED_CONTENT_TYPES: set = {
+       "audio/mpeg",    # MP3
+       "audio/flac",    # FLAC
+       "audio/wav",     # WAV
+       "audio/x-wav",   # WAV (альтернативный)
+       "audio/aac",     # AAC
+       "audio/mp4",     # MP4 Audio
+    }
+
+    ALLOWED_EXTENSIONS: set = {".mp3", ".flac", ".wav", ".aac", ".m4a"}
+
 
 class JWTSettings(BaseSettings):
     EXPIRE_MINUTES: int = 30
@@ -32,3 +51,4 @@ class RedisSettings(BaseSettings):
 redis_settings = RedisSettings()
 settings = Settings()
 jwt_settings = JWTSettings()
+track_setting = TrackSettings()
