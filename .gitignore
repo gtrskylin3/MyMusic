@@ -11,3 +11,4 @@ wheels/
 code_examples/
 cert/
 *.mp3
+*.db

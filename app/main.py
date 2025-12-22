@@ -24,5 +24,7 @@ MEDIA_PATH = Path("app/media/tracks")
 def get_track(filename: str):
     return FileResponse(MEDIA_PATH / filename)
 
+
+
 if __name__ == "__main__":
     uvicorn.run('app.main:app', reload=True)

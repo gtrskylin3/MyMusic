@@ -16,7 +16,8 @@ class Track(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] 
     description: Mapped[str | None]
-    filepath: Mapped[str]
+    file_url: Mapped[str]
+    filename: Mapped[str]
     # TODO
     # listening: Mapped[int]
     # likes: Mapped[int]
