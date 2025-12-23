@@ -75,3 +75,16 @@ async def get_track_by_title(
     if not track:
         raise HTTPException(status_code=404, detail="Track with this title not found")
     return TrackRead.model_validate(track)
+
+@router.get('/find', response_model=dict[int, TrackRead])
+async def get_by_genres(
+    db: sessionDep,
+    genres: list[str],
+    limit: int | None = None,
+    offset: int | None = None
+):
+    tracks = await tracks_repository.get_by_genre(db, genres)
+    if not tracks:
+        raise HTTPException(status_code=404, detail='Tracks with this genres not be found')
+    
+    return {track.file_url: TrackRead.model_validate(track) for track in tracks}
