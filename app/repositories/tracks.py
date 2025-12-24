@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import select, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 from app.schemas.tracks import TrackCreate, TrackUpdate
@@ -30,14 +30,22 @@ class TrackRepository:
         result = await db.scalar(stmt)
         return result
 
-    async def get_by_title(self, db: AsyncSession, title: str):
+    async def get_by_title(self, db: AsyncSession, title: str, limit: int | None = 10, offset: int | None = 0):
+        words = [word for word in title.split() if len(word) >= 2]
+        if not words:
+            return []
+        conditions = [Track.title.contains(word) for word in words]
         stmt = (
             select(Track)
             .options(selectinload(Track.genres))
-            .where(Track.title == title)
+            .where(or_(*conditions))
         )
-        result = await db.scalar(stmt)
-        return result
+        if limit:
+            stmt = stmt.limit(limit)
+        if offset:
+            stmt = stmt.offset(offset)
+        result = await db.scalars(stmt)
+        return result.all()
     
     
     async def get_by_artist(self, db: AsyncSession, artist_id: int, limit: int | None = 10, offset: int | None = 0):
@@ -45,23 +53,29 @@ class TrackRepository:
             select(Track)
             .options(selectinload(Track.genres))
             .where(Track.artist_id == artist_id)
-            .limit(limit)
+            
             .offset(offset)
         )
+        if limit:
+            stmt = stmt.limit(limit)
+        if offset:
+            stmt = stmt.offset(offset)
         result = await db.scalars(stmt)
         return result.all()
     
-    async def get_by_genre(self, db: AsyncSession, genres: list[str], limit: int | None = 10, offset: int | None = 0):
-        
+    async def get_by_genre(self, db: AsyncSession, genres: list[str], limit: int | None = None, offset: int | None = None):
+
         genres_db = await genre_repository.get_or_create(db, genres)
         genres_ids = [i.id for i in genres_db]
         stmt = (
             select(Track)
             .options(selectinload(Track.genres))
             .where(Track.genres.any(Genre.id.in_(genres_ids)))
-            .limit(limit)
-            .offset(offset)
         )
+        if limit:
+            stmt = stmt.limit(limit)
+        if offset:
+            stmt = stmt.offset(offset)
         result = await db.scalars(stmt)
         return result.all()
 
